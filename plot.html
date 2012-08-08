@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+<script src="RGraph/libraries/RGraph.common.core.js"></script>
+<script src="RGraph/libraries/RGraph.common.annotate.js"></script>  <!-- Just needed for annotating -->
+<script src="RGraph/libraries/RGraph.common.context.js"></script>   <!-- Just needed for context menus -->
+<script src="RGraph/libraries/RGraph.common.effects.js"></script>   <!-- Just needed for visual effects -->
+<script src="RGraph/libraries/RGraph.common.key.js"></script>       <!-- Just needed for keys -->
+<script src="RGraph/libraries/RGraph.common.resizing.js"></script>  <!-- Just needed for resizing -->
+<script src="RGraph/libraries/RGraph.common.tooltips.js"></script>  <!-- Just needed for tooltips -->
+<script src="RGraph/libraries/RGraph.common.zoom.js"></script>      <!-- Just needed for zoom -->
+<script src="RGraph/libraries/RGraph.radar.js"></script>            <!-- Just needed for Radar charts -->
+<script src="RGraph/libraries/RGraph.common.dynamic.js"></script>  
+<script>
+    window.onload = function ()
+    {
+         var radar = new RGraph.Radar('radar1', [7,6,6,7,8,6,7,7,6,6], [4,5,6,10,4,3,5,4,6,5], [4,3,5,7,6,5,3,2,4,5]);
+            radar.Set('chart.strokestyle', 'black');
+            radar.Set('chart.colors.alpha', 0.3);
+            radar.Set('chart.colors', ['red', 'green', 'yellow']);
+            
+            if (!RGraph.isOld()) {
+                radar.Set('chart.tooltips', [
+                                              'Pete','Lou','Jim','Jack','Fred','Jo','Lou','Freda','Pete','Rick',
+                                              'Pete','Lou','Jim','Jack','Fred','Jo','Lou','Freda','Pete','Rick',
+                                              'Pete','Lou','Jim','Jack','Fred','Jo','Lou','Freda','Pete','Rick'
+                                             ]);
+            }
+
+            radar.Set('chart.key', ['2000','2001','2002']);
+            radar.Set('chart.key.position', 'graph');
+            radar.Set('chart.labels', ['Pete','Lou','Jim','Jack','Fred','Jo','Lou','Freda','Pete','Rick']);
+            radar.Set('chart.gutter.top', 35);
+            radar.Set('chart.accumulative', true);
+            radar.Set('chart.labels.axes', '');
+            radar.Set('chart.axes.color', 'transparent');
+            //radar.Set('chart.background.circles.spacing', 25);
+            radar.Draw();
+    }
+</script>
+	</head>
+	<body>
+		<canvas id="radar1" width="1200" height="500">[No canvas support]</canvas>
+	</body>
+</html>

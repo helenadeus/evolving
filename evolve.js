@@ -7,6 +7,8 @@ data = {};
 data.getListDays = function (){
 	data.dailyActions = {};
 	data.allRulesDays = [];
+	data.rulesPerDay = {};
+
 	namesNodes = s3db.rules.map( function (a) { return a.object } );
 	idsNodes = s3db.rules.map( function (a) { return a.rule_id } );
 	combinedIdNames = {};
@@ -25,16 +27,19 @@ data.getListDays = function (){
 		if(typeof(data.dailyActions[date])=='undefined'){
 			data.dailyActions[date] = {created:[], changed: [], deleted: []};
 			data.allRulesDays.push(date);
+			
 		}
 			  	
-		if(actionsLog[i] == 'create') {
+		if($.trim(actionsLog[i]) == 'create') {
 			data.dailyActions[date].created.push(idsLog[i]);
 
-		} else if(actionsLog[i] == 'edit') {
+		} else if($.trim(actionsLog[i]) == 'edit') {
 			data.dailyActions[date].changed.push(idsLog[i]);
-		} else if(actionsLog[i] == 'delete') {
+		} else if($.trim(actionsLog[i]) == 'delete') {
 			data.dailyActions[date].deleted.push(idsLog[i]);
 		}
+		//if not rules were added, but one was deleted, this should be -1; will make sense for comulative display
+		data.rulesPerDay[date] = data.dailyActions[date].created.length-data.dailyActions[date].deleted.length
 	
 	} ) 
 	
@@ -196,7 +201,7 @@ s3db.getStatements = function (){
 	//retrieving statements per rule; some log rules (the has UID ones) require gathering items as well; so we gather all items
 	//for collecting items
 	s3db.completedStatsCall = 0;
-	s3db.simultStatsCalls = s3db.collections.length;
+	s3db.simultStatsCalls = s3db.rules.length;
 	s3db.statements = {};
 	
 	s3db.rules.map( function (a) {
@@ -256,8 +261,12 @@ $(document).ready(function() {
  	
  	//s3db.login = {'url':'http://204.232.200.16/s3db2/', 'key':'','project_id':''};
  //	s3db.login = {'url':'http://uab.s3db.org/s3db/', 'key':'mudamseostempos','project_id':'457'};
- 	
- 	s3db.login = {'url':'http://204.232.200.16/s3dbdemo/', 'key':'mudamseostempos','project_id':'4'}
+ 	get();
+ 	s3db.login = {};
+ 	s3db.login.url = (typeof(GET.url)=='undefined')?'http://204.232.200.16/s3dbdemo/':GET.url;
+ 	s3db.login.key = (typeof(GET.key)=='undefined')?'mudamseostempos':GET.key;
+ 	s3db.login.project_id = (typeof(GET.project_id)=='undefined')?'4':GET.project_id;
+ //	s3db.login = {'url':'http://204.232.200.16/s3dbdemo/', 'key':'mudamseostempos','project_id':'4'}
  	s3db.getData = 1;
 	s3db.getRules();
 	

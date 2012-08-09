@@ -5,19 +5,43 @@ var graph = {};
 
 graph.buildDiagram = function (){
 		data.datesScope = $.unique(data.allRulesDays.concat(data.allStatsDays)).sort();
+		
+		//total days evolving
+		//Set the two dates
+		var d1 = new Date(Date.parse(data.datesScope[0],"yyyy-MM-dd"))
+		var d2 = new Date(Date.parse(data.datesScope[data.datesScope.length-1],"yyyy-MM-dd"))
+		//Set 1 day in milliseconds
+		var one_day=1000*60*60*24
+		//Calculate difference btw the two dates, and convert to days
+		var totalDaysEvolving = Math.ceil((d2.getTime()-d1.getTime())/(one_day));
+		
+		//for each day evolving, create a data.datesScope
+		data.fullDatesScope = [];
+		for (var i=0; i <= totalDaysEvolving; i++) {
+		  //totalDaysEvolving[i]
+		  newDay = new Date(d1.getTime()+one_day*(i));
+		  date_str=(newDay.getFullYear())+'-'+('0'+(newDay.getMonth()+1)).substr(-2,2)+'-'+('0'+newDay.getDate()).substr(-2,2);
+			data.fullDatesScope.push(date_str);
+		};
+		
 		data.countRulesSortedByDate = [];
 		data.countStatsSortedByDate = [];
-		for (var v=0; v < data.datesScope.length; v++) {
-			var date = data.datesScope[v];
+		previousRuleCount = 0;
+		previousStatsCount = 0;
+		for (var v=0; v < data.fullDatesScope.length; v++) {
+			var date = data.fullDatesScope[v];
 			//acconting for days when there were no rules or not items added 
-			if(typeof(data.countRules[date])=='undefined'){
-				data.countRules[date] = 0;
+			if(typeof(data.rulesPerDay[date])=='undefined'){
+				data.rulesPerDay[date] = 0;
 			}
-			data.countRulesSortedByDate.push(data.countRules[date])
+			
+			data.countRulesSortedByDate.push(previousRuleCount+data.rulesPerDay[date])
+			previousRuleCount = previousRuleCount+data.rulesPerDay[date];
 			if(typeof(data.createdStatementsItems[date])=='undefined'){
 				data.createdStatementsItems[date] = 0;
 			}
-			data.countStatsSortedByDate.push(data.createdStatementsItems[date]);
+			data.countStatsSortedByDate.push(previousStatsCount+data.createdStatementsItems[date]);
+			previousStatsCount = previousStatsCount+data.createdStatementsItems[date];
 		}
 		
 		
@@ -29,15 +53,13 @@ graph.buildDiagram = function (){
             
             if (!RGraph.isOld()) {
                 radar.Set('chart.tooltips', [
-                                              'Pete','Lou','Jim','Jack','Fred','Jo','Lou','Freda','Pete','Rick',
-                                              'Pete','Lou','Jim','Jack','Fred','Jo','Lou','Freda','Pete','Rick',
-                                              'Pete','Lou','Jim','Jack','Fred','Jo','Lou','Freda','Pete','Rick'
+                                              
                                              ]);
             }
 
             radar.Set('chart.key', ['Rules','Statements']);
             radar.Set('chart.key.position', 'graph');
-            radar.Set('chart.labels', data.datesScope);
+            radar.Set('chart.labels', data.fullDatesScope);
             radar.Set('chart.gutter.top', 35);
             radar.Set('chart.accumulative', true);
             radar.Set('chart.labels.axes', '');

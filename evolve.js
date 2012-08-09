@@ -205,8 +205,11 @@ s3db.getStatements = function (){
 		
 	$.getJSON(statscall+'&format=json&callback=?', function (stats) { 
 		
+		if(typeof(stats[0])!='undefined'){
 		ridguess = stats[0].rule_id;
+		
 		s3db.statements[ridguess] = stats;
+		}
 		s3db.completedStatsCall++;
 		if(s3db.completedStatsCall==s3db.simultStatsCalls){
 			s3db.callItemsAndStatements++
@@ -231,9 +234,10 @@ s3db.getItems = function (){
 		
 		
 	$.getJSON(itemscall+'&format=json&callback=?', function (items) { 
-		
+		if(typeof(items[0])!='undefined'){
 		cidguess = items[0].collection_id;
 		s3db.items[cidguess] = items;
+		}
 		s3db.completedItemsCall++;
 		if(s3db.completedItemsCall==s3db.simultItemsCalls){
 			s3db.callItemsAndStatements++
@@ -250,7 +254,10 @@ s3db.getItems = function (){
 
 $(document).ready(function() {
  	
- 	s3db.login = {'url':'http://uab.s3db.org/s3db/', 'key':'mudamseostempos','project_id':'457'};
+ 	//s3db.login = {'url':'http://204.232.200.16/s3db2/', 'key':'','project_id':''};
+ //	s3db.login = {'url':'http://uab.s3db.org/s3db/', 'key':'mudamseostempos','project_id':'457'};
+ 	
+ 	s3db.login = {'url':'http://204.232.200.16/s3dbdemo/', 'key':'mudamseostempos','project_id':'4'}
  	s3db.getData = 1;
 	s3db.getRules();
 	

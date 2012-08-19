@@ -25,15 +25,60 @@
 		<script src="RGraph/libraries/RGraph.radar.js"></script>            <!-- Just needed for Radar charts -->
 		<script src="RGraph/libraries/RGraph.common.dynamic.js"></script>  
 		
+		
+		<script type="text/javascript" src="d3/d3.v2.js"></script>
+   		<link type="text/css" rel="stylesheet" href="d3/force.css"/>
+   
 		<script src="graph.js" type="text/javascript"></script>
 		<script src="evolve.js" type="text/javascript"></script>
 		
-	
+		<script type="text/javascript">
+					
+					
+		$(document).ready(function() {
+		 	
+		 	//s3db.login = {'url':'http://204.232.200.16/s3db2/', 'key':'','project_id':''};
+		 //	s3db.login = {'url':'http://uab.s3db.org/s3db/', 'key':'mudamseostempos','project_id':'457'};
+		 	get();
+		 	s3db.login = {};
+		 	s3db.login.url = (typeof(GET.url)=='undefined')?'http://204.232.200.16/s3dbdemo/':GET.url;
+		 	s3db.login.key = (typeof(GET.key)=='undefined')?'mudamseostempos':GET.key;
+		 	s3db.login.project_id = (typeof(GET.project_id)=='undefined')?'4':GET.project_id;
+		 	s3db.retrieveDataTrigger = 1;
+		 	
+		 	//get data from localStorage, if there at all
+		 	if(typeof(localStorage.evolve)!=='undefined'){
+		 		ev = JSON.parse(localStorage.evolve);
+		 		if(typeof(ev[s3db.login.url+"&key="+s3db.login.key+"&project_id="+s3db.login.project_id])!=='undefined'){
+		 			//var stored = JSON.parse(store[s3db.login.url+"&key="+s3db.login.key+"&project_id="+s3db.login.project_id]);
+		 			s3db = JSON.parse(ev[s3db.login.url+"&key="+s3db.login.key+"&project_id="+s3db.login.project_id].s3db);
+		 			data = JSON.parse(ev[s3db.login.url+"&key="+s3db.login.key+"&project_id="+s3db.login.project_id].data);
+		 			console.log('stored!')
+		 			graph.buildRadial();
+		 			graph.AssembleTopologyJson();
+		 		}
+		 		else  {
+					 s3db.getData();
+			 
+				}
+		 		
+		 	}
+		 	else  {
+			 s3db.getData();
+			 
+			}
+			
+			
+		});
+
+		</script>
 	
 	
 	</head>
 	
 	<body>
 				<canvas id="radar1" width="1200" height="500">[No canvas support]</canvas>
+				<div id="day_buttons" width="1200" height="500"></div>
+				<div id="chart" width="1200" height="500"></div>
 	</body>
 </html>

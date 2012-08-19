@@ -28,6 +28,9 @@ graph.buildDiagram = function (){
 		data.countStatsSortedByDate = [];
 		previousRuleCount = 0;
 		previousStatsCount = 0;
+		
+		//if the fullDatesScope is very large (+100), get less intervales
+		
 		for (var v=0; v < data.fullDatesScope.length; v++) {
 			var date = data.fullDatesScope[v];
 			//acconting for days when there were no rules or not items added 

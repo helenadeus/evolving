@@ -3,8 +3,45 @@
  */
 
 var s3db = {};
-data = {};
-data.getListDays = function (){
+data = {};dataactions = {};
+
+$(document).ready(function() {
+ 	
+ 	//s3db.login = {'url':'http://204.232.200.16/s3db2/', 'key':'','project_id':''};
+ //	s3db.login = {'url':'http://uab.s3db.org/s3db/', 'key':'mudamseostempos','project_id':'457'};
+ 	get();
+ 	s3db.login = {};
+ 	s3db.login.url = (typeof(GET.url)=='undefined')?'http://204.232.200.16/s3dbdemo/':GET.url;
+ 	s3db.login.key = (typeof(GET.key)=='undefined')?'mudamseostempos':GET.key;
+ 	s3db.login.project_id = (typeof(GET.project_id)=='undefined')?'4':GET.project_id;
+ //	s3db.login = {'url':'http://204.232.200.16/s3dbdemo/', 'key':'mudamseostempos','project_id':'4'}
+ 	s3db.getData = 1;
+ 	
+ 	//get data from localStorage, if there at all
+ 	if(typeof(localStorage.evolve)!=='undefined'){
+ 		ev = JSON.parse(localStorage.evolve);
+ 		if(typeof(ev[s3db.login.url+"&key="+s3db.login.key+"&project_id="+s3db.login.project_id])!=='undefined'){
+ 			//var stored = JSON.parse(store[s3db.login.url+"&key="+s3db.login.key+"&project_id="+s3db.login.project_id]);
+ 			s3db = JSON.parse(ev[s3db.login.url+"&key="+s3db.login.key+"&project_id="+s3db.login.project_id].s3db);
+ 			data = JSON.parse(ev[s3db.login.url+"&key="+s3db.login.key+"&project_id="+s3db.login.project_id].data);
+ 			console.log('stored!')
+ 			graph.buildDiagram();
+ 		}
+ 		else  {
+			 s3db.getRules();
+	 
+		}
+ 		
+ 	}
+ 	else  {
+	 s3db.getRules();
+	 
+	}
+	
+	
+});
+
+dataactions.getListDays = function (){
 	data.dailyActions = {};
 	data.allRulesDays = [];
 	data.rulesPerDay = {};
@@ -47,7 +84,7 @@ data.getListDays = function (){
 	
 }
 
-data.rebuildOntologies = function (){
+dataactions.rebuildOntologies = function (){
 	//a day ontollogy is the set of rules created before or on this day minus the rules deleted before or on this day
 	data.dayOntology = {};var allCreatedBefore = [];
 	data.countRules = {};
@@ -63,14 +100,14 @@ data.rebuildOntologies = function (){
 	
 }
 
-data.rollback = function () {
+dataactions.rollback = function () {
 	
 	
 	
 	//an ontology in a day is the combination of all the ruules that existed before that day minus the ones that were deleted
 	//will assume the ontology remained the same in the intervals betwen the existing days
-	data.getListDays();
-	data.rebuildOntologies();
+	dataactions.getListDays();
+	dataactions.rebuildOntologies();
 	
 	//now a bit of a hack because the rulelog logs collections via "hasUID" rules; need to match that to a collection ID
 	s3db.C2R_lookup = {};s3db.R2C_lookup = {};
@@ -95,7 +132,7 @@ data.rollback = function () {
 	
 }
 
-data.countEntries = function () {
+dataactions.countEntries = function () {
 	
 	if(s3db.callItemsAndStatements==2){
 		//we are now ready to count entries per day
@@ -154,6 +191,9 @@ data.countEntries = function () {
 	}
 	
 	//ready to move on
+	store = {}; store[s3db.login.url+"&key="+s3db.login.key+"&project_id="+s3db.login.project_id] = {'s3db':JSON.stringify(s3db), 'data':JSON.stringify(data)}; 
+	localStorage.evolve = JSON.stringify(store);
+	
 	graph.buildDiagram();
 	}
 	
@@ -169,7 +209,7 @@ s3db.getRules = function (x){
 		s3db.collections = collections; 
 		s3db.completedCall++;
 		if(s3db.completedCall==s3db.simultCalls){
-			data.rollback();
+			dataactions.rollback();
 		}
 			
 	})
@@ -179,7 +219,7 @@ s3db.getRules = function (x){
 		s3db.rules = rules; 
 		s3db.completedCall++;
 		if(s3db.completedCall==s3db.simultCalls){
-			data.rollback();
+			dataactions.rollback();
 		}
 			
 	})
@@ -190,7 +230,7 @@ s3db.getRules = function (x){
 		s3db.rulelog = rulelog; 
 		s3db.completedCall++;
 		if(s3db.completedCall==s3db.simultCalls){
-			data.rollback();
+			dataactions.rollback();
 		}
 			
 	})
@@ -218,7 +258,7 @@ s3db.getStatements = function (){
 		s3db.completedStatsCall++;
 		if(s3db.completedStatsCall==s3db.simultStatsCalls){
 			s3db.callItemsAndStatements++
-			data.countEntries();
+			dataactions.countEntries();
 		}
 			
 	})
@@ -246,7 +286,7 @@ s3db.getItems = function (){
 		s3db.completedItemsCall++;
 		if(s3db.completedItemsCall==s3db.simultItemsCalls){
 			s3db.callItemsAndStatements++
-			data.countEntries();
+			dataactions.countEntries();
 		}
 			
 	})
@@ -257,17 +297,3 @@ s3db.getItems = function (){
 	
 }
 
-$(document).ready(function() {
- 	
- 	//s3db.login = {'url':'http://204.232.200.16/s3db2/', 'key':'','project_id':''};
- //	s3db.login = {'url':'http://uab.s3db.org/s3db/', 'key':'mudamseostempos','project_id':'457'};
- 	get();
- 	s3db.login = {};
- 	s3db.login.url = (typeof(GET.url)=='undefined')?'http://204.232.200.16/s3dbdemo/':GET.url;
- 	s3db.login.key = (typeof(GET.key)=='undefined')?'mudamseostempos':GET.key;
- 	s3db.login.project_id = (typeof(GET.project_id)=='undefined')?'4':GET.project_id;
- //	s3db.login = {'url':'http://204.232.200.16/s3dbdemo/', 'key':'mudamseostempos','project_id':'4'}
- 	s3db.getData = 1;
-	s3db.getRules();
-	
-});

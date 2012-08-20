@@ -1,0 +1,199 @@
+<!DOCTYPE html> 
+<html> 
+	<head> 
+	<title>Evolve - Evolution of Experimental Ontologies</title> 
+	
+	<meta name="viewport" content="width=device-width, initial-scale=1"> 
+
+	<link rel="stylesheet" href="mobile/jquery.mobile-1.1.0-rc.1.min.css" />
+	<script src="mobile/jquery-1.7.1.min.js"></script>
+	<script src="mobile/jquery.mobile-1.1.0-rc.1.min.js"></script>
+	
+	
+	
+		<script src="array_prototype.js" type="text/javascript"></script>
+		
+		<script src="RGraph/libraries/RGraph.common.core.js"></script>
+		<script src="RGraph/libraries/RGraph.common.annotate.js"></script>  <!-- Just needed for annotating -->
+		<script src="RGraph/libraries/RGraph.common.context.js"></script>   <!-- Just needed for context menus -->
+		<script src="RGraph/libraries/RGraph.common.effects.js"></script>   <!-- Just needed for visual effects -->
+		<script src="RGraph/libraries/RGraph.common.key.js"></script>       <!-- Just needed for keys -->
+		<script src="RGraph/libraries/RGraph.common.resizing.js"></script>  <!-- Just needed for resizing -->
+		<script src="RGraph/libraries/RGraph.common.tooltips.js"></script>  <!-- Just needed for tooltips -->
+		<script src="RGraph/libraries/RGraph.common.zoom.js"></script>      <!-- Just needed for zoom -->
+		<script src="RGraph/libraries/RGraph.radar.js"></script>            <!-- Just needed for Radar charts -->
+		<script src="RGraph/libraries/RGraph.common.dynamic.js"></script>  
+		
+		
+		<script type="text/javascript" src="d3/d3.v2.js"></script>
+   		<link type="text/css" rel="stylesheet" href="d3/force.css"/>
+   
+		<script src="graph.js" type="text/javascript"></script>
+		<script src="evolve.js" type="text/javascript"></script>
+		
+		<script type="text/javascript">
+					
+					
+		$(document).ready(function() {
+		 	
+		 	//s3db.login = {'url':'http://204.232.200.16/s3db2/', 'key':'','project_id':''};
+		 //	s3db.login = {'url':'http://uab.s3db.org/s3db/', 'key':'mudamseostempos','project_id':'457'};
+		 	get();
+		 	s3db.login = {};
+		 	s3db.login.url = (typeof(GET.url)=='undefined')?'http://uab.s3db.org/s3db/':GET.url;
+		 	s3db.login.key = (typeof(GET.key)=='undefined')?'mudamseostempos':GET.key;
+		 	s3db.login.project_id = (typeof(GET.project_id)=='undefined')?'457':GET.project_id;
+		 	s3db.retrieveDataTrigger = 0;
+		 	
+		 	//get data from localStorage, if there at all
+		 	if(typeof(localStorage.evolve)!=='undefined'){
+		 		ev = JSON.parse(localStorage.evolve);
+		 		if(typeof(ev[s3db.login.url+"&key="+s3db.login.key+"&project_id="+s3db.login.project_id])!=='undefined'){
+		 			//var stored = JSON.parse(store[s3db.login.url+"&key="+s3db.login.key+"&project_id="+s3db.login.project_id]);
+		 			s3db = JSON.parse(ev[s3db.login.url+"&key="+s3db.login.key+"&project_id="+s3db.login.project_id].s3db);
+		 			data = JSON.parse(ev[s3db.login.url+"&key="+s3db.login.key+"&project_id="+s3db.login.project_id].data);
+		 			console.log('stored!')
+		 			graph.buildRadial();
+		 			graph.AssembleTopologyJson();
+		 		}
+		 		else  {
+					 s3db.getData();
+			 
+				}
+		 		
+		 	}
+		 	else  {
+			 s3db.getData();
+			 
+			}
+			
+			
+		});
+
+		</script>
+	
+</head> 
+<body> 
+
+<div data-role="page">
+
+	<div data-role="header">
+		<h1>Evolve</h1>
+	</div><!-- /header -->
+
+	<div data-role="content">	
+		<ul data-inset="true" data-role="listview" class="ui-listview ui-listview-inset ui-corner-all ui-shadow">
+			<li data-theme="c" >
+			<a href="#molecularEpidemi">
+				<h3>Molecular Epidemiology</h3>
+			</a>
+		</li>	
+		<li data-theme="c" >
+			<a href="#tcga">
+				<h3>The Cancer Genome Atlas</h3>
+			</a>
+		</li>	
+	</div><!-- /content -->
+
+	<div data-role="footer">
+		<h4>	</h4>
+	</div><!-- /footer -->
+</div><!-- /page -->
+
+<div data-role="page" id="molecularEpidemi">
+	<div data-role="header">
+		<h1>Molecular Epidemilogy Project</h1>
+	</div><!-- /header -->
+
+	<div data-role="content">	
+		<ul data-inset="true" data-role="listview" class="ui-listview ui-listview-inset ui-corner-all ui-shadow">
+		
+		<li data-theme="c" >
+			<a href="#me_radial">
+				<h3>Time/Data Radial Graph</h3>
+			</a>
+		</li>	
+		<li data-theme="c" >
+			<a href="#me_topology">
+				<h3>Topology</h3>
+			</a>
+		</li>	
+	</div><!-- /content -->
+	<div data-role="footer">
+		<h4>	</h4>
+	</div><!-- /footer -->
+</div>
+<div data-role="page" id="tcga">
+	<div data-role="header">
+		<h1>TCGA Project</h1>
+	</div><!-- /header -->
+
+	<div data-role="content">	
+		<ul data-inset="true" data-role="listview" class="ui-listview ui-listview-inset ui-corner-all ui-shadow">
+			<li data-theme="c" >
+			<a href="#tcga_radial">
+				<h3>Time/Data Radial Graph</h3>
+			</a>
+		</li>	
+		<li data-theme="c" >
+			<a href="#tcga_topology">
+				<h3>Topology</h3>
+			</a>
+		</li>
+	</div><!-- /content -->
+	<div data-role="footer">
+		<h4>	</h4>
+	</div><!-- /footer -->
+</div>
+<div data-role="page" id="me_radial">
+	<div data-role="header">
+		<h1>	</h1>
+	</div><!-- /header -->
+
+	<div data-role="content">	
+		<canvas id="radar1" width="1200" height="500">[No canvas support]</canvas>
+	</div><!-- /content -->
+	<div data-role="footer">
+		<h4>	</h4>
+	</div><!-- /footer -->
+</div>
+<div data-role="page" id="me_topology">
+	<div data-role="header">
+		<h1>	</h1>
+	</div><!-- /header -->
+
+	<div data-role="content">	
+		<div id="day_buttons" width="1200" height="500"></div>
+		<div id="chart" width="1200" height="500"></div>
+	</div><!-- /content -->
+	<div data-role="footer">
+		<h4>	</h4>
+	</div><!-- /footer -->
+</div>
+<div data-role="page" id="tcga_radial">
+	<div data-role="header">
+		<h1>	</h1>
+	</div><!-- /header -->
+
+	<div data-role="content">	
+		<canvas id="radar2" width="1200" height="500">[No canvas support]</canvas>
+	</div><!-- /content -->
+	<div data-role="footer">
+		<h4>	</h4>
+	</div><!-- /footer -->
+</div>
+<div data-role="page" id="tcga_topology">
+	<div data-role="header">
+		<h1>	</h1>
+	</div><!-- /header -->
+
+	<div data-role="content">	
+		<div id="day_buttons1" width="1200" height="500"></div>
+		<div id="chart1" width="1200" height="500"></div>
+	</div><!-- /content -->
+	<div data-role="footer">
+		<h4>	</h4>
+	</div><!-- /footer -->
+</div>
+</body>
+</html>

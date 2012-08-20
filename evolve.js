@@ -248,6 +248,11 @@ dataactions.rollback = function () {
 			//queriable rules also include deleted rules
 			s3db.getStatements();
 	}
+	else {
+		graph.buildRadial();
+	graph.drawTopology();
+		
+	}
 	
 	
 }

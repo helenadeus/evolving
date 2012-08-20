@@ -41,10 +41,10 @@
 		 //	s3db.login = {'url':'http://uab.s3db.org/s3db/', 'key':'mudamseostempos','project_id':'457'};
 		 	get();
 		 	s3db.login = {};
-		 	s3db.login.url = (typeof(GET.url)=='undefined')?'http://204.232.200.16/s3dbdemo/':GET.url;
+		 	s3db.login.url = (typeof(GET.url)=='undefined')?'http://uab.s3db.org/s3db/':GET.url;
 		 	s3db.login.key = (typeof(GET.key)=='undefined')?'mudamseostempos':GET.key;
-		 	s3db.login.project_id = (typeof(GET.project_id)=='undefined')?'4':GET.project_id;
-		 	s3db.retrieveDataTrigger = 1;
+		 	s3db.login.project_id = (typeof(GET.project_id)=='undefined')?'457':GET.project_id;
+		 	s3db.retrieveDataTrigger = 0;
 		 	
 		 	//get data from localStorage, if there at all
 		 	if(typeof(localStorage.evolve)!=='undefined'){
